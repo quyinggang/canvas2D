@@ -87,10 +87,10 @@ onMounted(() => {
   })
 
   /*
-        - 方式一：svg内容转换成base64 url作为图像地址，canvas绘制图像
-        - 方式二：svg文件直接作为图形地址，canvas绘制图像
-        - 可以使用svg foreignObject包裹html DOM从而实现在canvas中绘制dom内容
-      */
+    - 方式一：svg内容转换成base64 url作为图像地址，canvas绘制图像
+    - 方式二：svg文件直接作为图形地址，canvas绘制图像
+    - 可以使用svg foreignObject包裹html DOM从而实现在canvas中绘制dom内容
+  */
   const svgContent = `
     <svg xmlns="http://www.w3.org/2000/svg" height="210" width="500">
         <polygon
@@ -108,6 +108,5 @@ onMounted(() => {
     scene.add(new CImage(center.x, center.y, image))
     scene.render()
   })
-  
 })
 </script>
