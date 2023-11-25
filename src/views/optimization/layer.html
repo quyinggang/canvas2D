@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>分层canvas</title>
+    <style>
+      html,
+      body,
+      #root {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      #root {
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const shapeMap = new Map();
+      const getRandomColor = () => {
+        const type = "0123456789ABCDEF";
+        const len = type.length;
+        let color = "#";
+        for (let index = 0; index < 6; index++) {
+          color += type[Math.floor(Math.random() * len)];
+        }
+        return color;
+      };
+      const getUniqueColor = () => {
+        while (true) {
+          const color = getRandomColor();
+          if (!shapeMap.has(color)) {
+            return color;
+          }
+        }
+      };
+      const rgbToHex = (r, g, b) => {
+        return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      };
+
+      class Circle {
+        constructor(config) {
+          this.x = config.x;
+          this.y = config.y;
+          this.color = config.color;
+          this.radius = config.radius;
+          this.colorKey = getUniqueColor();
+          shapeMap.set(this.colorKey, this);
+        }
+        update(config) {
+          this.x = config.x;
+          this.y = config.y;
+        }
+        render(ctx, isBuffer) {
+          const { radius, color, x, y, colorKey } = this;
+          ctx.save();
+          ctx.fillStyle = isBuffer ? colorKey : color;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+          ctx.fill();
+          ctx.closePath();
+          ctx.restore();
+        }
+      }
+
+      class Canvas {
+        constructor(config) {
+          this.domElement = document.createElement("canvas");
+          this.ctx = this.domElement.getContext("2d", {
+            willReadFrequently: !!config.willReadFrequently,
+          });
+          this.setCanvasSize(config);
+          this.setCanvasAttrs();
+          // 会对画布内容放大pixel，用于高分辨率下的图形绘制
+          this.ctx.scale(config.pixel, config.pixel);
+        }
+        setCanvasSize(config) {
+          const { width, height, pixel } = config;
+          this.width = width * pixel;
+          this.height = height * pixel;
+          this.styleWidth = width;
+          this.styleHeight = height;
+        }
+        setCanvasAttrs() {
+          const { width, height, styleWidth, styleHeight, domElement } = this;
+          domElement.width = width;
+          domElement.height = height;
+          domElement.style.cssText = `position:absolute;top:0;left:0;background:transparent;display:block;width:${styleWidth}px;height:${styleHeight}px;`;
+        }
+      }
+
+      class Scene {
+        constructor(config) {
+          const { width, height, container } = config;
+          this.content = container;
+          this.width = width;
+          this.height = height;
+          this.children = [];
+          this.canvas = new Canvas({
+            pixel: window.devicePixelRatio,
+            width,
+            height,
+          });
+          this.bufferHitCanvas = new Canvas({
+            pixel: 1,
+            width,
+            height,
+            willReadFrequently: true,
+          });
+          this.mountCanvas();
+        }
+        mountCanvas() {
+          this.content.appendChild(this.canvas.domElement);
+        }
+        add(shape) {
+          this.children.push(shape);
+        }
+        remove(shape) {
+          const children = this.children;
+          const index = children.findIndex((item) => item === shape);
+          if (index !== -1) {
+            children.splice(index, 1);
+          }
+        }
+        getSelectedShape(position) {
+          const ctx = this.bufferHitCanvas.ctx;
+          const data = ctx.getImageData(
+            Math.round(position.x),
+            Math.round(position.y),
+            1,
+            1
+          ).data;
+          if (data[3] === 255) {
+            const hex = rgbToHex(data[0], data[1], data[2]);
+            const targetColorKey = `#${hex}`.toUpperCase();
+            if (shapeMap.has(targetColorKey)) {
+              return shapeMap.get(targetColorKey);
+            }
+          }
+        }
+        render() {
+          const { width, height, children, canvas, bufferHitCanvas } = this;
+          const {
+            ctx: sceneCtx,
+            width: canvasWidth,
+            height: canvasHeight,
+          } = canvas;
+          const { ctx: hitCtx } = bufferHitCanvas;
+          sceneCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+          for (const shape of children) {
+            shape.render(sceneCtx);
+            shape.render(hitCtx, true);
+          }
+        }
+      }
+
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const scene = new Scene({
+        container: document.getElementById("root"),
+        width,
+        height,
+      });
+      for (let index = 0; index < 10000; index++) {
+        scene.add(
+          new Circle({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: 20,
+            color: getRandomColor(),
+          })
+        );
+      }
+      scene.render();
+
+      const dragScene = new Scene({
+        container: document.getElementById("root"),
+        width,
+        height,
+      });
+
+      // 拖拽
+      let oldPosition = null;
+      let isDragging = false;
+      const scaleBy = 1.01;
+      let selectedShape = null;
+
+      window.addEventListener("mouseup", (event) => {
+        if (isDragging && selectedShape) {
+          dragScene.remove(selectedShape);
+          dragScene.render();
+          scene.add(selectedShape);
+          scene.render();
+          console.log("---------end------");
+          console.log(scene.children.length);
+          console.log(dragScene.children.length);
+        }
+        isDragging = false;
+      });
+      window.addEventListener("mousemove", (event) => {
+        if (!isDragging || !selectedShape) return;
+        const newPosition = { x: event.pageX, y: event.pageY };
+        const diff = {
+          x: newPosition.x - oldPosition.x,
+          y: newPosition.y - oldPosition.y,
+        };
+        selectedShape.update({
+          x: selectedShape.x + diff.x,
+          y: selectedShape.y + diff.y,
+        });
+        dragScene.render();
+        oldPosition = newPosition;
+      });
+      window.addEventListener("mousedown", (event) => {
+        const { pageX, pageY } = event;
+        oldPosition = { x: pageX, y: pageY };
+        isDragging = true;
+        const point = { x: event.pageX, y: event.pageY };
+        const shape = scene.getSelectedShape(point);
+        if (shape) {
+          // 选中后将要拖拽的图形绘制到拖拽层，之后的拖动都是重绘拖拽层，1万个节点全量渲染会导致拖拽时卡顿，可以通过局部渲染来优化
+          selectedShape = shape;
+          dragScene.add(shape);
+          dragScene.render();
+          scene.remove(shape);
+          scene.render();
+          console.log("-----start-------");
+          console.log(scene.children.length);
+          console.log(dragScene.children.length);
+        }
+      });
+    </script>
+  </body>
+</html>

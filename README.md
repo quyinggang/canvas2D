@@ -1,2 +1,4 @@
 # canvas2d
-学习canvas图形渲染相关知识
+
+- basic：canvas实践案例
+- optimization：canvas优化策略
