@@ -6,7 +6,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { loadImage } from '@/utils'
 import backgroundAssets from '@/assets/plane/background.png'
 import startAssets from '@/assets/plane/start.png'
 import bulletAssets from '@/assets/plane/bullet.png'
@@ -30,7 +31,7 @@ onMounted(() => {
   const height = boxElement.clientHeight
   const dpr = window.devicePixelRatio
   backgroundElement.style.cssText = `width:${width}px;height:100%;`
-  gameElement.style.cssText = `width: ${width}px;height:100%`;
+  gameElement.style.cssText = `width: ${width}px;height:100%`
   backgroundElement.width = dpr * width
   backgroundElement.height = dpr * height
   gameElement.width = dpr * width
@@ -121,16 +122,6 @@ onMounted(() => {
     [IMAGE_KEY_ALIAS.enemy3]: [enemy3Assets, enemy3DownAssets]
   }
 
-  const loadImage = (url) => {
-    const image = new Image()
-    image.src = url
-    return new Promise((resolve, reject) => {
-      image.onload = () => resolve(image)
-      image.onerror = reject
-    }).catch(() => {
-      console.error('图片加载失败')
-    })
-  }
   const clearGame = () => {
     gameCanvasCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
   }
@@ -368,6 +359,10 @@ onMounted(() => {
         [IMAGE_KEY_ALIAS.enemy3]: 0
       }
     }
+    destroy() {
+      this.background.stop()
+      window.cancelAnimationFrame(this.raf)
+    }
     // 点击开始页面后开始5s倒计时后开始游戏
     startGame() {
       if (this.state === STATE_ALIAS.progress) return
@@ -601,11 +596,9 @@ onMounted(() => {
     }
   }
 
-  const init = () => {
-    new GameEngine(LEVEL_INFO.easy)
-  }
+  const engine = new GameEngine(LEVEL_INFO.easy)
 
-  init()
+  onBeforeUnmount(() => engine.destroy())
 })
 </script>
 
