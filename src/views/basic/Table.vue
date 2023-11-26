@@ -289,9 +289,9 @@ onMounted(() => {
       sceneDomElement.addEventListener('wheel', this.handleWheel)
     }
     destroy() {
-      const scene = this.getScene()
+      const { content } = this.scene
       window.cancelAnimationFrame(this.raf)
-      scene.content.removeEventListener('wheel', this.handleWheel)
+      content.removeEventListener('wheel', this.handleWheel)
     }
   }
 

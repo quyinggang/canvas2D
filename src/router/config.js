@@ -106,21 +106,41 @@ const basicList = [
   }
 ]
 
-// const optimizationList = [
-//   {
-//     path: '',
-//     title: '',
-//     componentName: ''
-//   }
-// ]
+const optimizationList = [
+  {
+    path: '/buffer',
+    title: '离屏缓冲Canvas',
+    componentName: 'Buffer'
+  },
+  {
+    path: '/client',
+    title: '可视区域渲染',
+    componentName: 'ClientRender'
+  },
+  {
+    path: '/layer',
+    title: '分层Canvas',
+    componentName: 'Layer'
+  },
+  {
+    path: '/partRender',
+    title: '局部渲染',
+    componentName: 'PartRender'
+  },
+  {
+    path: '/worker',
+    title: '离屏&Worker',
+    componentName: 'Worker'
+  }
+]
 
 export default [
   {
     dir: 'basic',
     list: basicList
+  },
+  {
+    dir: 'optimization',
+    list: optimizationList
   }
-  // {
-  //   dir: 'optimization',
-  //   list: optimizationList
-  // }
 ]
