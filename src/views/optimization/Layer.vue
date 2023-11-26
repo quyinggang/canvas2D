@@ -23,7 +23,6 @@ onMounted(() => {
         isLoop = false
         return color
       }
-      isLoop = true
     }
   }
   const rgbToHex = (r, g, b) => {
