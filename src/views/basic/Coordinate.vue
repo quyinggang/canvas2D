@@ -166,9 +166,9 @@ onMounted(() => {
     }
     render() {
       const { width, height, children, canvas } = this
-      const { ctx, width: canvasWidth, height: canvasHeight } = canvas
+      const { ctx } = canvas
       const sceneMatrix = this.transform.getMatrix()
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+      ctx.clearRect(0, 0, width, height)
       for (const shape of children) {
         const transform = new Transform()
         transform.multiply(sceneMatrix)
@@ -231,7 +231,6 @@ onMounted(() => {
     scene.render()
   }
 
-
   boxElement.addEventListener('wheel', handleWheel, { passive: false })
   boxElement.addEventListener('click', handleClick)
 })
@@ -244,11 +243,10 @@ onMounted(() => {
 
 .tip {
   position: absolute;
-  top: 10%;
+  top: 3%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  color: darkgrey;
   user-select: none;
   pointer-events: none;
 }

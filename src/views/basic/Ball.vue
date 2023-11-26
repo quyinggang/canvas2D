@@ -101,7 +101,7 @@ onMounted(() => {
 
 .tip {
   position: absolute;
-  top: 10%;
+  top: 3%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 20px;

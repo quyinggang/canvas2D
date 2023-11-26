@@ -96,5 +96,6 @@ watch(
   margin-left: 180px;
   height: 100%;
   background: #b6cdc0;
+  overflow: hidden;
 }
 </style>

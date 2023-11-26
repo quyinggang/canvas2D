@@ -79,7 +79,7 @@ onMounted(() => {
     new Circle(event.pageX - boxRect.left, event.pageY - boxRect.top, 20, getRandomColor())
   }
 
-  onBeforeUnmount(() => window.cancelAnimationFrame(raf))  
+  onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 })
 </script>
 
@@ -90,11 +90,10 @@ onMounted(() => {
 
 .tip {
   position: absolute;
-  top: 10%;
+  top: 3%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  color: darkgrey;
   user-select: none;
   pointer-events: none;
 }

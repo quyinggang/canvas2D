@@ -1,5 +1,6 @@
 <template>
   <div class="box" ref="boxElementRef">
+    <span class="tip">请拖动鼠标查看效果</span>
     <canvas class="canvas" ref="canvasElementRef"></canvas>
   </div>
 </template>
@@ -39,3 +40,19 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.box {
+  position: relative;
+}
+
+.tip {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  user-select: none;
+  pointer-events: none;
+}
+</style>
