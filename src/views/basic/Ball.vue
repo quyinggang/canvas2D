@@ -95,16 +95,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .box {
   position: relative;
 }
 
 .tip {
   position: absolute;
-  top: 50%;
+  top: 10%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   font-size: 20px;
   z-index: 0;
   user-select: none;

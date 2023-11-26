@@ -93,22 +93,32 @@ const basicList = [
     path: '/svg',
     title: '绘制SVG内容',
     componentName: 'Svg'
+  },
+  {
+    path: '/swiper',
+    title: '图片滑动验证码',
+    componentName: 'Swiper'
+  },
+  {
+    path: '/Table',
+    title: '简易表格',
+    componentName: 'Table'
   }
 ]
 
-const optimizationList = [
-  {
-    path: '',
-    title: '',
-    componentName: ''
-  }
-]
+// const optimizationList = [
+//   {
+//     path: '',
+//     title: '',
+//     componentName: ''
+//   }
+// ]
 
 export default [
   {
     dir: 'basic',
     list: basicList
-  },
+  }
   // {
   //   dir: 'optimization',
   //   list: optimizationList
