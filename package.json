@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "precommit": "lint-staged",
-    "lint": "eslint . --ext .vue,.js --fix --ignore-path .gitignore",
+    "lint": "eslint --ext .vue,.js --fix",
     "format": "prettier --write src/"
   },
   "husky": {
@@ -17,8 +17,7 @@
     }
   },
   "lint-staged": {
-    "src/**/*.{vue,js}": "eslint --cache --fix",
-    "src/**/*.{vue,js,md,json}": "prettier --write"
+    "src/**/*.{vue,js}": "eslint --cache --fix"
   },
   "dependencies": {
     "vue": "^3.3.9",
