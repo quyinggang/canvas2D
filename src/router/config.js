@@ -20,16 +20,6 @@ const basicList = [
     componentName: 'Colorful'
   },
   {
-    path: '/coordinate',
-    title: '坐标系转换',
-    componentName: 'Coordinate'
-  },
-  {
-    path: '/drag',
-    title: '图形拖拽',
-    componentName: 'Drag'
-  },
-  {
     path: '/dynamic',
     title: '动态离子',
     componentName: 'Dynamic'
@@ -38,11 +28,6 @@ const basicList = [
     path: '/erase',
     title: '刮刮乐',
     componentName: 'Erase'
-  },
-  {
-    path: '/fighter',
-    title: '飞机大战',
-    componentName: 'Fighter'
   },
   {
     path: '/fireworks',
@@ -65,6 +50,16 @@ const basicList = [
     componentName: 'Paint'
   },
   {
+    path: '/coordinate',
+    title: '坐标系转换',
+    componentName: 'Coordinate'
+  },
+  {
+    path: '/drag',
+    title: '图形拖拽',
+    componentName: 'Drag'
+  },
+  {
     path: '/panzoom',
     title: '拖动和缩放画布',
     componentName: 'Panzoom'
@@ -80,11 +75,6 @@ const basicList = [
     componentName: 'Select'
   },
   {
-    path: '/snake',
-    title: '贪吃蛇',
-    componentName: 'Snake'
-  },
-  {
     path: '/solar',
     title: '太阳系',
     componentName: 'Solar'
@@ -95,6 +85,11 @@ const basicList = [
     componentName: 'Svg'
   },
   {
+    path: '/snake',
+    title: '贪吃蛇',
+    componentName: 'Snake'
+  },
+  {
     path: '/swiper',
     title: '图片滑动验证码',
     componentName: 'Swiper'
@@ -103,7 +98,12 @@ const basicList = [
     path: '/Table',
     title: '简易表格',
     componentName: 'Table'
-  }
+  },
+  {
+    path: '/fighter',
+    title: '飞机大战',
+    componentName: 'Fighter'
+  },
 ]
 
 const optimizationList = [
