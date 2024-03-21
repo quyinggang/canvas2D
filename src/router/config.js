@@ -1,8 +1,8 @@
 const basicList = [
   {
-    path: '/ball',
-    title: '跳动小球',
-    componentName: 'Ball'
+    path: '/clock',
+    title: '时钟',
+    componentName: 'Clock'
   },
   {
     path: '/chart',
@@ -10,9 +10,9 @@ const basicList = [
     componentName: 'Chart'
   },
   {
-    path: '/clock',
-    title: '时钟',
-    componentName: 'Clock'
+    path: '/ball',
+    title: '跳动小球',
+    componentName: 'Ball'
   },
   {
     path: '/colorful',
@@ -20,24 +20,24 @@ const basicList = [
     componentName: 'Colorful'
   },
   {
-    path: '/dynamic',
-    title: '动态离子',
-    componentName: 'Dynamic'
-  },
-  {
     path: '/erase',
     title: '刮刮乐',
     componentName: 'Erase'
   },
   {
-    path: '/fireworks',
-    title: '烟花',
-    componentName: 'Fireworks'
+    path: '/paint',
+    title: '简易画板',
+    componentName: 'Paint'
   },
   {
-    path: '/flow',
-    title: '粒子游动',
-    componentName: 'Flow'
+    path: '/svg',
+    title: '绘制SVG内容',
+    componentName: 'Svg'
+  },
+  {
+    path: '/solar',
+    title: '太阳系',
+    componentName: 'Solar'
   },
   {
     path: '/flyline',
@@ -45,10 +45,43 @@ const basicList = [
     componentName: 'Flyline'
   },
   {
-    path: '/paint',
-    title: '简易画板',
-    componentName: 'Paint'
+    path: '/dynamic',
+    title: '动态离子',
+    componentName: 'Dynamic'
   },
+  {
+    path: '/flow',
+    title: '粒子游动',
+    componentName: 'Flow'
+  },
+  {
+    path: '/swiper',
+    title: '图片滑动验证码',
+    componentName: 'Swiper'
+  },
+  {
+    path: '/Table',
+    title: '简易表格',
+    componentName: 'Table'
+  },
+  {
+    path: '/fireworks',
+    title: '烟花',
+    componentName: 'Fireworks'
+  },
+  {
+    path: '/snake',
+    title: '贪吃蛇',
+    componentName: 'Snake'
+  },
+  {
+    path: '/fighter',
+    title: '飞机大战',
+    componentName: 'Fighter'
+  },
+]
+
+const coordinateList = [
   {
     path: '/coordinate',
     title: '坐标系转换',
@@ -73,36 +106,6 @@ const basicList = [
     path: '/select',
     title: '图形拾取',
     componentName: 'Select'
-  },
-  {
-    path: '/solar',
-    title: '太阳系',
-    componentName: 'Solar'
-  },
-  {
-    path: '/svg',
-    title: '绘制SVG内容',
-    componentName: 'Svg'
-  },
-  {
-    path: '/snake',
-    title: '贪吃蛇',
-    componentName: 'Snake'
-  },
-  {
-    path: '/swiper',
-    title: '图片滑动验证码',
-    componentName: 'Swiper'
-  },
-  {
-    path: '/Table',
-    title: '简易表格',
-    componentName: 'Table'
-  },
-  {
-    path: '/fighter',
-    title: '飞机大战',
-    componentName: 'Fighter'
   },
 ]
 
@@ -138,6 +141,10 @@ export default [
   {
     dir: 'basic',
     list: basicList
+  },
+  {
+    dir: 'coordinate',
+    list: coordinateList
   },
   {
     dir: 'optimization',
