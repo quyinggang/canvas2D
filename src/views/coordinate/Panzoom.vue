@@ -180,6 +180,7 @@ onMounted(() => {
       translateX: newPosition.x - oldPosition.x + translation.x,
       translateY: newPosition.y - oldPosition.y + translation.y
     })
+    // 拖拽画布实际上时重新计算了所有绘制元素的坐标，再重新绘制（无限画布的原理也是如此）
     scene.render()
 
     oldPosition = newPosition

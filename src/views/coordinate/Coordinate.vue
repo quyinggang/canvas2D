@@ -72,6 +72,7 @@ onMounted(() => {
       this.setCanvasSize(config)
       this.setCanvasAttrs()
       // 会对画布内容放大pixel，用于高分辨率下的图形绘制
+      // 此时scale会设置canvas坐标系与屏幕坐标系相同，屏幕坐标与canvas坐标无需转换，并且可以自己维护矩阵用于线性变换
       this.ctx.scale(config.pixel, config.pixel)
     }
     setCanvasSize(config) {
