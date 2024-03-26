@@ -74,6 +74,9 @@ const basicList = [
     title: '贪吃蛇',
     componentName: 'Snake'
   },
+]
+
+const advancedList = [
   {
     path: '/fighter',
     title: '飞机大战',
@@ -145,6 +148,10 @@ export default [
   {
     dir: 'coordinate',
     list: coordinateList
+  },
+  {
+    dir: 'advance',
+    list: advancedList
   },
   {
     dir: 'optimization',
