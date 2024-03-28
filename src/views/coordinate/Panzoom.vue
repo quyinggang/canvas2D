@@ -132,12 +132,13 @@ onMounted(() => {
       const { ctx, width: canvasWidth, height: canvasHeight } = canvas
       const sceneMatrix = this.transform.matrix
       ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+      // 方式2：全局translate
       for (const shape of children) {
         const transform = new Transform()
         transform.multiply(sceneMatrix)
         transform.multiply(shape.transform.matrix)
         ctx.save()
-        // 计算缩放后图形的位置坐标，移动坐标系原点到该坐标
+        // 方式1： 计算缩放后图形的位置坐标，移动坐标系原点到该坐标
         const m = transform.matrix
         ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5])
         shape.render(ctx)
