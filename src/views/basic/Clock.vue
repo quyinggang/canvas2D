@@ -5,12 +5,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const boxElementRef = ref(null)
 const canvasElementRef = ref(null)
 
 onMounted(() => {
+  let raf = null
   const boxElement = boxElementRef.value
   const canvasElement = canvasElementRef.value
   const width = boxElement.clientWidth
@@ -112,12 +113,13 @@ onMounted(() => {
   }
 
   const renderFrame = () => {
-    requestAnimationFrame(renderFrame)
+    raf = requestAnimationFrame(renderFrame)
     // 绘制每一帧都需要清除前一帧绘制内容
     ctx.clearRect(0, 0, canvasWidth, canvasHeight)
     renderClock()
   }
 
   renderFrame()
+  onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 })
 </script>

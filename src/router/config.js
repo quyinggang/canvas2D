@@ -82,6 +82,11 @@ const advancedList = [
     title: '飞机大战',
     componentName: 'Fighter'
   },
+  {
+    path: '/snake2',
+    title: '贪吃蛇进阶版',
+    componentName: 'Snake'
+  }
 ]
 
 const coordinateList = [
