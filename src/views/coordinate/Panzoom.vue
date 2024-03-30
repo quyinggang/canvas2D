@@ -132,7 +132,7 @@ onMounted(() => {
       const { ctx, width: canvasWidth, height: canvasHeight } = canvas
       const sceneMatrix = this.transform.matrix
       ctx.clearRect(0, 0, canvasWidth, canvasHeight)
-      // 方式2：全局translate
+      // 方式2：全局transform
       for (const shape of children) {
         const transform = new Transform()
         transform.multiply(sceneMatrix)
@@ -201,24 +201,38 @@ onMounted(() => {
   const handleWheel = (event) => {
     event.preventDefault()
     const { pageX, pageY, deltaY } = event
-    const x = pageX - boxBounding.left
-    const y = pageY - boxBounding.top
     const { x: oldScale } = scene.getScale()
     const translation = scene.getTranslation()
-    const newScale = deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
-    const mousePointTo = {
-      x: (x - translation.x) / oldScale,
-      y: (y - translation.y) / oldScale
+    const nextScale = deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
+    // 屏幕坐标减去偏移量，由于canvas在之前设置scale(dpr)，canvas坐标系与屏幕坐标系相同
+    // 屏幕坐标 = canvas坐标，故而可以直接当作canvas坐标系使用
+    const x = pageX - boxBounding.left
+    const y = pageY - boxBounding.top
+    // 计算(x,y)与canvas坐标系当前原点的偏移值
+    const offsetX = x - translation.x 
+    const offsetY = y - translation.y
+    // 将oldScale比例下偏移值转换成缩放比例为1的偏移
+    const offsetSize = {
+      x: offsetX / oldScale,
+      y: offsetY / oldScale
     }
-    const newPos = {
-      x: x - mousePointTo.x * newScale,
-      y: y - mousePointTo.y * newScale
+    /**
+     * 假设当前点是10,10，坐标系原点是0,0
+     * 此时scale是1，此时偏移值是 10 - 0 / 1
+     * 此后scale是2，偏移值变为10 * 2，意味着点从10,10 变成 20,20
+     * 需要缩放点相对位置不变，就需要将偏移-10
+     * 
+     * 偏移值应用新的scale后，想要保持位置相对不变，需要反向平移
+     */
+    const newTranslation = {
+      x: -offsetSize.x * nextScale + x,
+      y: -offsetSize.y * nextScale + y
     }
     scene.changeTransform({
-      scaleX: newScale,
-      scaleY: newScale,
-      translateX: newPos.x,
-      translateY: newPos.y
+      scaleX: nextScale,
+      scaleY: nextScale,
+      translateX: newTranslation.x,
+      translateY: newTranslation.y
     })
     scene.render()
   }

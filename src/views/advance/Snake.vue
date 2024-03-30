@@ -347,8 +347,11 @@ onMounted(() => {
       const head = snake.getHead()
       ctx.clearRect(0, 0, width, height)
       ctx.save()
-      // 蛇头在运动中始终位于可视中心位置（镜头同步跟随）
-      // 蛇初始位置是可视中心点，计算每次蛇移动后的偏移差值，坐标系原点做补偿从而实现蛇头始终居中显示
+      /*
+        蛇头在运动中始终位于可视中心位置（镜头同步跟随）
+        - 计算每次蛇移动后的偏移差值，坐标系原点做补偿从而实现蛇头始终居中显示
+        - 需要注意的是clientCenter表示的是屏幕坐标系坐标，但是由于canvas设置与屏幕坐标系相同，所以屏幕坐标可以直接使用
+      */
       ctx.translate(clientCenter.x - head.x, clientCenter.y - head.y)
       snake.rotate()
       snake.move()

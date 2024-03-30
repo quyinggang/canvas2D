@@ -86,6 +86,11 @@ const advancedList = [
     path: '/snake2',
     title: '贪吃蛇进阶版',
     componentName: 'Snake'
+  },
+  {
+    path: '/sceneMap',
+    title: 'Robot场景地图',
+    componentName: 'SceneMap'
   }
 ]
 
