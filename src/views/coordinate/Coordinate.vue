@@ -75,8 +75,27 @@ onMounted(() => {
       // 此时scale会设置canvas坐标系与屏幕坐标系相同，屏幕坐标与canvas坐标无需转换，并且可以自己维护矩阵用于线性变换
       this.ctx.scale(config.pixel, config.pixel)
     }
+    getTransform() {
+      return this.ctx.getTransform()
+    }
     setCanvasSize(config) {
       const { width, height, pixel } = config
+      /**
+       * 绘图面积和显示面积的设置，对于浏览器dpr非1时，就会出现模糊或者拉伸的情况，此时设置dpr值就可以解决
+       * 在点击屏幕时：
+       * - 应用dpr会到来坐标转换的问题，此时屏幕坐标在canvas中绘制效果就不是鼠标点击的点，即dpr影响了Canvas上的绘图和用户输入事件的坐标转换
+       * - 如果不设置dpr，鼠标点击位置处canvas就会绘制图形，即屏幕坐标 = canvas坐标，可看成它们的坐标系相同没有任何变换
+       * 
+       * 不管应用不应用dpr，canvas矩阵的缩放值都是1，但是显示效果是不同的
+       * - 应用dpr的效果：在点击位置的1 / dpr处绘制
+       * - 不应用dpr：在点击处绘制
+       * 
+       * 为了图形的清晰度，通常都需要应用dpr，此时需要对canvas scale(dpr)，从而实现屏幕坐标 = canvas坐标无需转换，需要说明的是：
+       * - 你应用dpr后虽然缩放dpr倍（比如2倍），但此时canvas矩阵scale值是0.5
+       * - 应用scale(dpr)抹平了dpr带来坐标转换，此时屏幕坐标 = canvas坐标，
+       *   但是如果canvas存在其他变换，例如缩放平移等，屏幕坐标与canvas坐标的转换还是需要通过逆矩阵变换实现，
+       *   可以自己维护矩阵来实现，避免后续频繁调用canvas的矩阵获取方法导致的性能问题
+       */
       this.width = width * pixel
       this.height = height * pixel
       this.styleWidth = width
@@ -174,6 +193,7 @@ onMounted(() => {
       const end = { x: width, y: height }
       const startPoint = invertTransform.point(start)
       const endPoint = invertTransform.point(end)
+      console.log(startPoint, endPoint)
       const clientRange = {
         x: startPoint.x,
         y: startPoint.y,
@@ -235,10 +255,11 @@ onMounted(() => {
     scene.render()
   }
   const handleClick = (event) => {
-    const pos = scene.getRelativePointerPosition({
+    const point = {
       x: event.pageX - boxRect.left,
       y: event.pageY - boxRect.top
-    })
+    }
+    const pos = scene.getRelativePointerPosition(point)
     scene.add(
       new Circle({
         x: pos.x,
