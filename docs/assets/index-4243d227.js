@@ -1,1 +1,0 @@
-const t=()=>{const n="0123456789ABCDEF",o=n.length;let r="#";for(let e=0;e<6;e++)r+=n[Math.floor(Math.random()*o)];return r},a=(n,o)=>{const r=Math.random();return Math.round(r*(o-n)+n)},s=n=>{const o=new Image;return o.crossOrigin="Anonymous",o.src=n,new Promise((r,e)=>{o.onload=()=>r(o),o.onerror=()=>e()})};export{a,t as g,s as l};
