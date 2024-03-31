@@ -92,20 +92,17 @@ onMounted(() => {
 
   class Circle {
     constructor(config) {
+      this.x = config.x
+      this.y = config.y
       this.color = config.color
       this.radius = config.radius
       this.transform = new Transform()
-      this.changeTransform(config)
-    }
-    changeTransform(config) {
-      this.transform.updateMatrix([1, 0, 0, 1, config.x, config.y])
     }
     render(ctx) {
-      const { radius, color } = this
+      const { x, y, radius, color } = this
       ctx.fillStyle = color
       ctx.beginPath()
-      // 从0,0点开始绘制，是因为在绘制前会将canvas原点移动到当前图形的x,y位置
-      ctx.arc(0, 0, radius, 0, 2 * Math.PI, false)
+      ctx.arc(x, y, radius, 0, 2 * Math.PI, false)
       ctx.fill()
       ctx.closePath()
     }
@@ -154,7 +151,8 @@ onMounted(() => {
       }
     }
     getRelativePointerPosition(pointer) {
-      // 需要注意的是此时矩阵不包含scale(dpr)，canvas提供的getTransform获取的矩阵包含scale(dpr)
+      // 需要注意的是此时矩阵是自维护的矩阵，不包含scale(dpr)的变化
+      // canvas提供的getTransform获取的canvas矩阵
       const matrix = this.transform.getMatrix()
       const transform = new Transform(matrix)
       // 逆转矩阵
@@ -165,22 +163,42 @@ onMounted(() => {
     add(shape) {
       this.children.push(shape)
     }
+    // 实验：屏幕坐标 -> canvas坐标
+    renderViewportRect(m) {
+      const { canvas, width, height } = this
+      const ctx = canvas.ctx
+      // 新建当前矩阵的逆转矩阵，用于计算屏幕视口（屏幕坐标）对应的canvas坐标
+      const invertTransform = new Transform(m)
+      invertTransform.invert()
+      const start = { x: 0, y: 0 }
+      const end = { x: width, y: height }
+      const startPoint = invertTransform.point(start)
+      const endPoint = invertTransform.point(end)
+      const clientRange = {
+        x: startPoint.x,
+        y: startPoint.y,
+        width: endPoint.x - startPoint.x,
+        height: endPoint.y - startPoint.y
+      }
+      ctx.lineWidth = 2
+      ctx.strokeStyle = 'red'
+      ctx.strokeRect(clientRange.x, clientRange.y, clientRange.width, clientRange.height)
+    }
     render() {
       const { width, height, children, canvas } = this
       const { ctx } = canvas
       const sceneMatrix = this.transform.getMatrix()
+      // 这里使用全局translate来实现，其他案例中有每个元素都应用transform的方式
+      const transform = new Transform().multiply(sceneMatrix)
+      const m = transform.getMatrix()
       ctx.clearRect(0, 0, width, height)
+      ctx.save()
+      ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5])
+      this.renderViewportRect(m)
       for (const shape of children) {
-        const transform = new Transform()
-        transform.multiply(sceneMatrix)
-        transform.multiply(shape.transform.getMatrix())
-        ctx.save()
-        // 计算缩放后图形的位置坐标，移动坐标系原点到该坐标
-        const m = transform.getMatrix()
-        ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5])
         shape.render(ctx)
-        ctx.restore()
       }
+      ctx.restore()
     }
   }
 

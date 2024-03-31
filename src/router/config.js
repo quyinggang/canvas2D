@@ -89,7 +89,7 @@ const advancedList = [
   },
   {
     path: '/sceneMap',
-    title: 'Robot场景地图',
+    title: '简单场景地图',
     componentName: 'SceneMap'
   }
 ]

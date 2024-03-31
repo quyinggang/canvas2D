@@ -22,3 +22,29 @@ export const loadImage = (url) => {
     image.onerror = () => reject()
   })
 }
+
+export class EventEmitter {
+  constructor() {
+    this.map = new Map()
+  }
+  on(name, callback) {
+    const map = this.map
+    const value = map.get(name) || []
+    map.set(name, [...value, callback])
+  }
+  emit(name, data) {
+    const value = this.map.get(name)
+    if (Array.isArray(value)) {
+      for (const callback of value) {
+        typeof callback === 'function' && callback(data)
+      }
+    }
+  }
+  off(name, callback) {
+    const value = this.map.get(name) || []
+    const index = value.findIndex((cb) => cb === callback)
+    if (index !== -1) {
+      value.splice(index, 1)
+    }
+  }
+}

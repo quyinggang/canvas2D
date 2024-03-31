@@ -1,6 +1,5 @@
 <template>
   <div class="box" ref="boxElementRef">
-    <div class="view" ref="viewElementRef"></div>
     <ul class="btn-container">
       <li id="follow" class="btn">跟随</li>
       <li id="locate" class="btn">定位</li>
@@ -14,12 +13,10 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { getRandomColor, getNumberInRange, loadImage } from '@/utils'
 import robotImage from '@/assets/robot.png'
 
-const viewElementRef = ref(null)
 const boxElementRef = ref(null)
 
 onMounted(() => {
   const boxElement = boxElementRef.value
-  const viewElement = viewElementRef.value
 
   const SETTING = {
     mapBackground: '#161c22',
@@ -34,6 +31,32 @@ onMounted(() => {
   class Transform {
     constructor(matrix = [1, 0, 0, 1, 0, 0]) {
       this.matrix = [...matrix]
+    }
+    invert() {
+      const m = this.matrix
+      const d = 1 / (m[0] * m[3] - m[1] * m[2])
+      const m0 = m[3] * d
+      const m1 = -m[1] * d
+      const m2 = -m[2] * d
+      const m3 = m[0] * d
+      const m4 = d * (m[2] * m[5] - m[3] * m[4])
+      const m5 = d * (m[1] * m[4] - m[0] * m[5])
+      return new Transform([m0, m1, m2, m3, m4, m5])
+    }
+    multiply(matrix) {
+      const m = this.matrix
+      var m11 = m[0] * matrix[0] + m[2] * matrix[1]
+      var m12 = m[1] * matrix[0] + m[3] * matrix[1]
+      var m21 = m[0] * matrix[2] + m[2] * matrix[3]
+      var m22 = m[1] * matrix[2] + m[3] * matrix[3]
+      var dx = m[0] * matrix[4] + m[2] * matrix[5] + m[4]
+      var dy = m[1] * matrix[4] + m[3] * matrix[5] + m[5]
+      m[0] = m11
+      m[1] = m12
+      m[2] = m21
+      m[3] = m22
+      m[4] = dx
+      m[5] = dy
     }
     changeScaler(scale) {
       const matrix = this.matrix
@@ -321,6 +344,9 @@ onMounted(() => {
       })
       this.shapes.push(this.robot)
     }
+    getTransform() {
+      return this.mouseController.transform
+    }
     changeToCenter() {
       // 初始设置将画布坐标原点移到可视区域中心
       this.mouseController.panTo(this.clientCenter)
@@ -331,7 +357,7 @@ onMounted(() => {
       const oldScale = transform.getScaler()
       const translation = transform.getTranslation()
 
-      // 计算显示全部场景的缩放值
+      // 计算显示全部场景需要的缩放值
       const offset = SETTING.sceneOffset
       const { sx, sy, ex, ey } = sceneRange
       const sceneWidth = ex - sx
@@ -394,7 +420,7 @@ onMounted(() => {
       const { x, y, width, height } = shapeInfo
       const { mouseController, boundingClient, originMatrix } = this
 
-      // 因为shape的坐标是canvas的默认坐标系下定义的吗，每次定位依据原始状态进行
+      // 因为shape的坐标是canvas的默认坐标系下定义的，每次定位依据原始状态进行
       // 所以需要使用自定义的最初坐标系矩阵进行每次变换，而不是前一个变换下的矩阵
       const originTransform = new Transform(originMatrix)
       const oldScale = originTransform.getScaler()
@@ -453,51 +479,65 @@ onMounted(() => {
     }
   }
 
-  class ViewManager {
-    constructor(config) {
-      this.container = config.container
-      this.viewTargetSize = config.viewTargetSize
-      this.createThumbElement()
-      this.createViewerLayer()
-      this.zoomSceneToThumb()
-    }
-    createThumbElement() {
-      const thumbElement = document.createElement('div')
-      this.thumbElement = thumbElement
-      this.container.appendChild(thumbElement)
-    }
-    createViewerLayer() {
-      const { width, height } = this.viewTargetSize
+  // class ViewManager {
+  //   constructor(config) {
+  //     this.container = config.container
+  //     this.boundingClient = this.container.getBoundingClientRect()
+  //     this.mapManager = config.mapManager
+  //     this.createThumb()
+  //     this.createViewerLayer()
+  //     this.createMouseController()
+  //     this.zoomSceneToThumb()
+  //   }
+  //   createThumb() {
+  //     const thumbElement = document.createElement('div')
+  //     const dragElement = document.createElement('div')
+  //     this.container.appendChild(dragElement)
+  //     this.container.appendChild(thumbElement)
+  //     this.dragElement = dragElement
+  //     this.thumbElement = thumbElement
+  //   }
+  //   createViewerLayer() {
+  //     const { width, height } = this.mapManager.canvas
 
-      this.canvas = new Canvas({
-        width,
-        height,
-        pixel: 1
-      })
-    }
-    zoomSceneToThumb() {
-      const { container, viewTargetSize } = this
-      const { width, height } = container.getBoundingClientRect()
-      const { width: mapWidth, height: mapHeight } = viewTargetSize
-      // 计算出鸟瞰图视口大小显示地图场景需要的缩放值
-      const zoomToFit = Math.min(width / mapWidth, height / mapHeight)
-      // 计算出鸟瞰图剩余空间从而计算出居中偏移量
-      const translation = {
-        x: (width - mapWidth * zoomToFit) * 0.5,
-        y: (height - mapHeight * zoomToFit) * 0.5
-      }
-      const sizeCssText = `width:${mapWidth}px;height:${mapHeight}px;`
-      const transformCssText = `transform-origin:0 0;transform:translate(${translation.x}px,${translation.y}px) scale(${zoomToFit});`
-      this.thumbElement.style.cssText = `${sizeCssText}${transformCssText}`
-      this.zoomToFit = zoomToFit
-    }
-    mountCanvas() {
-      this.thumbElement.appendChild(this.canvas.domElement)
-    }
-    destroy() {
-      this.container = null
-    }
-  }
+  //     this.canvas = new Canvas({
+  //       width,
+  //       height,
+  //       pixel: window.devicePixelRatio
+  //     })
+  //   }
+  //   createMouseController() {
+  //     const container = this.container
+  //     const { top, left } = this.boundingClient
+  //     const mouseController = new MouseController({
+  //       element: container,
+  //       offset: { top, left }
+  //     })
+  //     this.mouseController = mouseController
+  //   }
+  //   zoomSceneToThumb() {
+  //     const { width, height } = this.boundingClient
+  //     const { width: mapWidth, height: mapHeight } = this.mapManager.canvas
+  //     // 计算出鸟瞰图视口大小显示地图场景需要的缩放值
+  //     const zoomToFit = Math.min(width / mapWidth, height / mapHeight)
+  //     // 计算出鸟瞰图剩余空间从而计算出居中偏移量
+  //     const translation = {
+  //       x: (width - mapWidth * zoomToFit) * 0.5,
+  //       y: (height - mapHeight * zoomToFit) * 0.5
+  //     }
+  //     const positionCssText = `position:absolute;top:0;left:0;width:${mapWidth}px;height:${mapHeight}px;z-index:1;`
+  //     const transformCssText = `transform-origin:0 0;transform:translate(${translation.x}px,${translation.y}px) scale(${zoomToFit});`
+  //     this.thumbElement.style.cssText = `${positionCssText}${transformCssText}`
+  //     this.zoomToFit = zoomToFit
+  //     this.transform = new Transform([zoomToFit, 0, 0, zoomToFit, translation.x, translation.y])
+  //   }
+  //   mountCanvas() {
+  //     this.thumbElement.appendChild(this.canvas.domElement)
+  //   }
+  //   destroy() {
+  //     this.container = null
+  //   }
+  // }
 
   class ToolManager {
     constructor(tools) {
@@ -528,20 +568,12 @@ onMounted(() => {
   class SceneMap {
     constructor(config) {
       this.raf = null
-      this.isRenderedViewer = false
       this.createManager(config)
       this.mount()
     }
     createManager(config) {
-      const { viewer, container } = config
-      const mapManager = new MapManager({
-        container
-      })
-      const mapCanvas = mapManager.canvas
-      this.viewManager = new ViewManager({
-        container: viewer,
-        viewTargetSize: { width: mapCanvas.width, height: mapCanvas.height }
-      })
+      const { container } = config
+      const mapManager = new MapManager({ container })
       this.toolManager = new ToolManager([
         {
           element: document.getElementById('follow'),
@@ -557,14 +589,6 @@ onMounted(() => {
         }
       ])
       this.mapManager = mapManager
-    }
-    renderView() {
-      const { mapManager, viewManager, isRenderedViewer } = this
-      if (isRenderedViewer) return
-      const { ctx, width, height } = viewManager.canvas
-      ctx.clearRect(0, 0, width, height)
-      ctx.drawImage(mapManager.canvas.domElement, 0, 0)
-      this.isRenderedViewer = true
     }
     createRobot(image) {
       this.mapManager.createRobot(image)
@@ -587,29 +611,23 @@ onMounted(() => {
         shape.render(mapContext)
       }
       mapContext.restore()
-      this.renderView()
     }
     renderLoop() {
       this.renderFrame()
       this.raf = window.requestAnimationFrame(this.renderLoop.bind(this))
     }
     mount() {
-      const { viewManager, mapManager } = this
-      viewManager.mountCanvas()
-      mapManager.mountCanvas()
+      this.mapManager.mountCanvas()
     }
     destroy() {
-      this.viewManager.destroy()
       this.mapManager.destroy()
       this.toolManager.destroy()
     }
   }
 
   const map = new SceneMap({
-    container: boxElement,
-    viewer: viewElement
+    container: boxElement
   })
-  // 异步加载的资源影响鸟瞰图渲染内容的完整性，这里简单处理
   loadImage(robotImage).then((image) => {
     map.createRobot(image)
     map.renderLoop()
@@ -627,19 +645,9 @@ onMounted(() => {
   user-select: none;
 }
 
-.view {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  z-index: 1;
-  width: 200px;
-  height: 100px;
-  background: #909399;
-}
-
 .btn-container {
   position: absolute;
-  bottom: 120px;
+  bottom: 10px;
   right: 10px;
   z-index: 1;
   color: #fff;
