@@ -479,66 +479,6 @@ onMounted(() => {
     }
   }
 
-  // class ViewManager {
-  //   constructor(config) {
-  //     this.container = config.container
-  //     this.boundingClient = this.container.getBoundingClientRect()
-  //     this.mapManager = config.mapManager
-  //     this.createThumb()
-  //     this.createViewerLayer()
-  //     this.createMouseController()
-  //     this.zoomSceneToThumb()
-  //   }
-  //   createThumb() {
-  //     const thumbElement = document.createElement('div')
-  //     const dragElement = document.createElement('div')
-  //     this.container.appendChild(dragElement)
-  //     this.container.appendChild(thumbElement)
-  //     this.dragElement = dragElement
-  //     this.thumbElement = thumbElement
-  //   }
-  //   createViewerLayer() {
-  //     const { width, height } = this.mapManager.canvas
-
-  //     this.canvas = new Canvas({
-  //       width,
-  //       height,
-  //       pixel: window.devicePixelRatio
-  //     })
-  //   }
-  //   createMouseController() {
-  //     const container = this.container
-  //     const { top, left } = this.boundingClient
-  //     const mouseController = new MouseController({
-  //       element: container,
-  //       offset: { top, left }
-  //     })
-  //     this.mouseController = mouseController
-  //   }
-  //   zoomSceneToThumb() {
-  //     const { width, height } = this.boundingClient
-  //     const { width: mapWidth, height: mapHeight } = this.mapManager.canvas
-  //     // 计算出鸟瞰图视口大小显示地图场景需要的缩放值
-  //     const zoomToFit = Math.min(width / mapWidth, height / mapHeight)
-  //     // 计算出鸟瞰图剩余空间从而计算出居中偏移量
-  //     const translation = {
-  //       x: (width - mapWidth * zoomToFit) * 0.5,
-  //       y: (height - mapHeight * zoomToFit) * 0.5
-  //     }
-  //     const positionCssText = `position:absolute;top:0;left:0;width:${mapWidth}px;height:${mapHeight}px;z-index:1;`
-  //     const transformCssText = `transform-origin:0 0;transform:translate(${translation.x}px,${translation.y}px) scale(${zoomToFit});`
-  //     this.thumbElement.style.cssText = `${positionCssText}${transformCssText}`
-  //     this.zoomToFit = zoomToFit
-  //     this.transform = new Transform([zoomToFit, 0, 0, zoomToFit, translation.x, translation.y])
-  //   }
-  //   mountCanvas() {
-  //     this.thumbElement.appendChild(this.canvas.domElement)
-  //   }
-  //   destroy() {
-  //     this.container = null
-  //   }
-  // }
-
   class ToolManager {
     constructor(tools) {
       this.tools = tools

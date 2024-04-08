@@ -91,6 +91,11 @@ const advancedList = [
     path: '/sceneMap',
     title: '简单场景地图',
     componentName: 'SceneMap'
+  },
+  {
+    path: '/miniMap',
+    title: '场景小地图',
+    componentName: 'MiniMap'
   }
 ]
 
