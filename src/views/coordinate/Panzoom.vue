@@ -204,8 +204,8 @@ onMounted(() => {
     const { x: oldScale } = scene.getScale()
     const translation = scene.getTranslation()
     const nextScale = deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
-    // 屏幕坐标减去偏移量，由于canvas在之前设置scale(dpr)，canvas坐标系与屏幕坐标系相同
-    // 屏幕坐标 = canvas坐标，故而可以直接当作canvas坐标使用
+    // 屏幕坐标减去偏移量，
+    // 由于canvas在之前设置scale(dpr)，屏幕坐标 = canvas坐标，故而可以直接当作canvas坐标使用
     const x = pageX - boxBounding.left
     const y = pageY - boxBounding.top
     // 计算(x,y)与canvas坐标系当前原点的偏移值
